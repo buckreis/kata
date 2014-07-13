@@ -6,11 +6,11 @@ package kata.lookandsay;
  */
 public class LookAndSay {
 
-    public static class SequenceHasOddNumberOfDigitsException extends Exception {
+    public static class IllegalSequenceException extends Exception {
 
     }
 
-    public static int lookAndSayAsAnInt(int root) {
+    public static int lookAndSayAsAnInt(int root) throws IllegalSequenceException {
         if (0 == root) {
             return 0;
         }
@@ -20,21 +20,17 @@ public class LookAndSay {
 
         while (i == root % 10) {
             count++;
+            //you can't have more 9 digits in a row
+            if (count == 10) {
+                throw new IllegalSequenceException();
+            }
             root /= 10;
         }
 
         return lookAndSayAsAnInt(root) * 100 + count * 10 + i;
     }
 
-    public static int lookAndSayAsAnIntReverse(int root) {
-        try {
-            return lookAndSayAsAnIntReverseWithException(root);
-        } catch (SequenceHasOddNumberOfDigitsException ex) {
-            return root;
-        }
-    }
-
-    private static int lookAndSayAsAnIntReverseWithException(int root) throws SequenceHasOddNumberOfDigitsException {
+    public static int lookAndSayAsAnIntReverse(int root) throws IllegalSequenceException {
 
         if (0 == root) {
             return 0;
@@ -42,8 +38,11 @@ public class LookAndSay {
         int digit = root % 10;
         root /= 10;
         int count = root % 10;
-        if (count == 0) {
-            throw new SequenceHasOddNumberOfDigitsException();
+                
+        //You can't have 0 of a digit
+        //or if the sequence is now 0, there are no numbers to pull from
+        if (0 == count || 0 == root) {
+            throw new IllegalSequenceException();
         }
         int i = 0;
         root /= 10;
@@ -53,7 +52,7 @@ public class LookAndSay {
             i++;
         }
 
-        return lookAndSayAsAnIntReverseWithException(root) * (int) Math.pow(10, count) + value;
+        return lookAndSayAsAnIntReverse(root) * (int) Math.pow(10, count) + value;
     }
 
 }
